@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Rocket Configurator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #configurator {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 12px;
+      border-radius: 10px;
+      z-index: 1;
+      max-width: 90vw;
+    }
+
+    label, select, input {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1em;
+      width: 100%;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="configurator">
+    <label for="finShape">Fin Shape:</label>
+    <select id="finShape">
+      <option value="triangle">Triangle</option>
+      <option value="rectangle">Rectangle</option>
+    </select>
+    <label for="finSize">Fin Size:</label>
+    <input type="range" id="finSize" min="0.5" max="2" step="0.1" value="1">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script>
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    let renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 10, 7.5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x444444));
+
+    let rocketGroup = new THREE.Group();
+    const bodyGeometry = new THREE.CylinderGeometry(0.5, 0.5, 5, 32);
+    const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0x8888ff });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    rocketGroup.add(body);
+
+    const coneGeometry = new THREE.ConeGeometry(0.5, 1.5, 32);
+    const coneMaterial = new THREE.MeshStandardMaterial({ color: 0xff5555 });
+    const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+    cone.position.y = 3.25;
+    rocketGroup.add(cone);
+
+    const finMaterial = new THREE.MeshStandardMaterial({ color: 0x55ff55 });
+    let fins = [];
+
+    function addFins(shape = 'triangle', size = 1) {
+      fins.forEach(fin => rocketGroup.remove(fin));
+      fins = [];
+
+      let geom;
+      if (shape === 'triangle') {
+        const vertices = new Float32Array([
+          0, 0, 0,
+          0.5 * size, 0, 0,
+          0, size, 0,
+        ]);
+        geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        geom.setIndex([0, 1, 2]);
+        geom.computeVertexNormals();
+      } else {
+        geom = new THREE.BoxGeometry(0.1 * size, size, 0.3 * size);
+      }
+
+      for (let i = 0; i < 3; i++) {
+        const fin = new THREE.Mesh(geom, finMaterial.clone());
+        fin.position.y = -2.5;
+        const angle = (i / 3) * 2 * Math.PI;
+        fin.position.x = Math.cos(angle) * 0.6;
+        fin.position.z = Math.sin(angle) * 0.6;
+        fin.lookAt(0, -2.5, 0);
+        rocketGroup.add(fin);
+        fins.push(fin);
+      }
+    }
+
+    addFins();
+
+    scene.add(rocketGroup);
+    camera.position.z = 10;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      rocketGroup.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    document.getElementById('finShape').addEventListener('change', (e) => {
+      addFins(e.target.value, parseFloat(document.getElementById('finSize').value));
+    });
+
+    document.getElementById('finSize').addEventListener('input', (e) => {
+      addFins(document.getElementById('finShape').value, parseFloat(e.target.value));
+    });
+  </script>
+</body>
+</html>

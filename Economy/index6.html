@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Kit Customizer</title>
+    <link rel="stylesheet" href="style6.css">
+</head>
+<body>
+    <div id="top-bar">
+        <nav>
+            <ul>
+                <li><a href="#">Начало</a></li>
+                <li><a href="#">За нас</a></li>
+                <li><a href="#">Ракети</a></li>
+                <li><a href="#">Двигатели</a></li>
+                <li><a href="#">Станции за изстрелване</a></li>
+                <li><a href="#">Аксесоари</a></li>
+                <li><a href="#">Контакти</a></li>
+                <li><a href="#">Персонализирана изработка</a></li>
+            </ul>
+        </nav>
+        <div class="lang">
+            <span>English</span>
+            <img src="path_to_flag_icon.png" alt="Flag Icon">
+        </div>
+    </div>
+    
+    <div id="threejs-container">
+        <div id="controls">
+            <div class="control-group">
+                <label for="noseDropdown">Nose Variant:</label>
+                <select id="noseDropdown" class="custom-dropdown">
+                    <option value="cone1">Sharp Cone</option>
+                    <option value="cone2">Blunt Cone</option>
+                    <option value="cone3">Rounded Cone</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="colorDropdown">Nose Color:</label>
+                <select id="colorDropdown" class="custom-dropdown">
+                    <option value="#ff0000">Red</option>
+                    <option value="#00ff00">Green</option>
+                    <option value="#0000ff">Blue</option>
+                </select>
+            </div>
+            <button id="resetView" class="custom-button">Reset View</button>
+        </div>
+        <div id="instructions">
+            <p>Click and drag to rotate | Scroll to zoom</p>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+    <script src="script6.js"></script>
+</body>
+</html>
